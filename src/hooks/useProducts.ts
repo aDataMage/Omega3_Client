@@ -4,6 +4,7 @@ import {
   createProduct,
   updateProduct,
   deleteProduct,
+  getTopNProductByMetric,
 } from "@/api/product";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Product, ProductCreate, ProductUpdate } from "@/types/product";
@@ -66,3 +67,11 @@ export const useDeleteProduct = () => {
     },
   });
 };
+
+export const useTopNProducts = (n: number, metric: string) => {
+  return useQuery<Product[]>({
+    queryKey: ["products", "top", n, metric],
+    queryFn: () => getTopNProductByMetric(metric, n), // Replace with actual API call for top products
+    enabled: !!n && !!metric,
+  });
+}

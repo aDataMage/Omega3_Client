@@ -14,7 +14,9 @@ export const useKpis = () => {
     queryKey: ['kpis', startDate, endDate],
     queryFn: async (): Promise<KPIs[]> => {
       if (!startDate || !endDate) return [];
+      console.log("Called")
       const response = await axios.get(`/kpi?start_date=${startDate}&end_date=${endDate}`);
+      console.log(response)
       return response.data;
     },
     enabled: !!startDate && !!endDate, // only run if dates exist

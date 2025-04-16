@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Geist, Geist_Mono, Poppins } from "next/font/google";
 import "./globals.css";
-import Providers from './providers';
+import Providers from "./providers";
 import { AppBar } from "@/components";
 
 const geistSans = Geist({
@@ -12,6 +12,12 @@ const geistSans = Geist({
 const geistMono = Geist_Mono({
   variable: "--font-geist-mono",
   subsets: ["latin"],
+});
+
+const poppins = Poppins({
+  variable: "--font-poppins",
+  subsets: ["latin"],
+  weight: ["100", "200", "300", "400", "600", "700"],
 });
 
 export const metadata: Metadata = {
@@ -26,10 +32,8 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-      >
-          <AppBar />
+      <body className={`${poppins.variable} ${geistMono.variable} antialiased`}>
+        <AppBar />
         <Providers>{children}</Providers>
       </body>
     </html>

@@ -13,6 +13,7 @@ export const getKpis = async (): Promise<KPIs[]> => {
   // }
 
   try {
+    console.log("Called")
     const response = await axios.get<KPIs[]>(BASE_URL+"/?start_date=2023-01-01&end_date=2023-12-31");
     return response.data;
   } catch (error) {
