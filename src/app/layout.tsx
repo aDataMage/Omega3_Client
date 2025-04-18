@@ -31,10 +31,13 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <body className={`${poppins.variable} ${geistMono.variable} antialiased`}>
-        <AppBar />
-        <Providers>{children}</Providers>
+        <Providers>
+          <div className="absolute top-0 left-0 right-0 bottom-3/5 -z-10 bg-gradient-to-b from-chart-2/80 via-chart-2/50 via-60% to-transparent" />
+          <AppBar />
+          {children}
+        </Providers>
       </body>
     </html>
   );

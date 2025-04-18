@@ -1,4 +1,4 @@
-"use client"
+"use client";
 
 import * as React from "react";
 import { addDays, format } from "date-fns";
@@ -59,10 +59,10 @@ export function DatePickerWithRange({
             toDate={maxDate}
             onSelect={setDateRange}
             numberOfMonths={2}
-            captionLayout="dropdown" // Switch to dropdown mode
-            // components={{
-            //   Dropdown: CustomSelectDropdown, // Use CustomDropdown here
-            // }}
+            // captionLayout="dropdown" // Switch to dropdown mode
+            components={{
+              Dropdown: CustomSelectDropdown, // Use CustomDropdown here
+            }}
           />
         </PopoverContent>
       </Popover>

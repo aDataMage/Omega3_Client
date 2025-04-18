@@ -36,7 +36,7 @@ const SOT = ({ data }: SOTProps) => {
         <YAxis hide />
         <ReferenceDot ifOverflow="hidden" />
         <Tooltip payload={data} />
-        <Line type="monotone" dataKey="value" stroke="#8884d8" dot={false} />
+        <Line type="monotone" dataKey="value" dot={false} />
       </LineChart>
     </ChartContainer>
   );

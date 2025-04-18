@@ -22,9 +22,11 @@ const KpiCard = (props: KPIs) => {
     return { date: dates[index], value: item };
   });
   return (
-    <Card className="w-full bg-white shadow-sm hover:shadow-md gap-2 transition-shadow duration-300 ease-in-out">
+    <Card className="w-full bg-muted border-none shadow-2xs hover:shadow-xs shadow-chart-2 gap-2 transition-shadow duration-300 ease-in-out">
       <CardHeader>
-        <CardTitle className="text-md font-semibold">{props.title}</CardTitle>
+        <CardTitle className="text-md font-semibold text-card-foreground">
+          {props.title}
+        </CardTitle>
         <CardDescription className="text-sm font-light text-gray-500">
           {props.current_date_range}
         </CardDescription>
@@ -43,8 +45,8 @@ const KpiCard = (props: KPIs) => {
               className={cn(
                 "text-md font-semibold",
                 parseFloat(props.percentage_change) > 0
-                  ? "text-green-500"
-                  : "text-red-500"
+                  ? "text-primary"
+                  : "text-destructive"
               )}
             >
               {props.percentage_change}

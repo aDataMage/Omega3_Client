@@ -4,8 +4,10 @@ import {
   Line,
   LineChart,
   CartesianGrid,
+  AreaChart,
   XAxis,
   YAxis,
+  Area,
   Tooltip,
   ResponsiveContainer,
 } from "recharts";
@@ -55,10 +57,10 @@ const TrendOverTime = () => {
 
   return (
     <Tabs value={activeTab ?? ""} className="w-full h-[300px] overflow-hidden">
-      <TabsList className="relative inline-flex bg-muted p-1 rounded-md overflow-hidden h-10">
+      <TabsList className="relative inline-flex  bg-muted p-1 rounded-md overflow-hidden h-10 shadow-xs shadow-accent/15">
         {/* Sliding indicator */}
         <motion.div
-          className="absolute top-1 left-1 h-[calc(100%-0.5rem)] rounded-sm bg-gray-800 z-0 transition-all duration-300"
+          className="absolute top-1 left-1 h-[calc(100%-0.5rem)] rounded-sm bg-primary z-0 transition-all duration-300"
           style={{
             width: triggerWidth,
             transform: `translateX(${offset}px)`,
@@ -73,7 +75,9 @@ const TrendOverTime = () => {
             onClick={() => setActiveTab(title)}
             className={cn(
               "relative z-10 px-4 py-1 transition-colors",
-              activeTab === title ? "text-white" : "text-muted-foreground"
+              activeTab === title
+                ? "text-secondary-foreground"
+                : "text-muted-foreground"
             )}
           >
             {title}
@@ -85,7 +89,7 @@ const TrendOverTime = () => {
         <TabsContent
           key={kpi.title}
           value={kpi.title}
-          className="h-[calc(100%-2.5rem)] pt-2"
+          className="h-[calc(100%-2.5rem)] pt-4"
         >
           <ChartContainer
             title={kpi.title}
@@ -93,11 +97,30 @@ const TrendOverTime = () => {
             className="h-full w-full"
           >
             <ResponsiveContainer width="100%" height="100%">
-              <LineChart
+              <AreaChart
                 data={kpi.trend_data}
                 margin={{ top: 10, right: 20, left: 0, bottom: 10 }}
               >
-                <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
+                <defs>
+                  <linearGradient id="gradientFill" x1="0" y1="0" x2="0" y2="1">
+                    <stop
+                      offset="5%"
+                      stopColor="var(--chart-2)"
+                      stopOpacity={0.5}
+                    />
+                    <stop
+                      offset="95%"
+                      stopColor="var(--chart-2)"
+                      stopOpacity={0}
+                    />
+                  </linearGradient>
+                </defs>
+
+                <CartesianGrid
+                  strokeDasharray="2 2"
+                  stroke="var(--foreground)"
+                  opacity={0.1}
+                />
                 <XAxis dataKey="date" tick={{ fontSize: 12 }} />
                 <YAxis tick={{ fontSize: 12 }} tickFormatter={formatCurrency} />
                 <Tooltip
@@ -109,15 +132,16 @@ const TrendOverTime = () => {
                   }}
                   labelStyle={{ color: "#d1d5db" }}
                 />
-                <Line
+                <Area
                   type="monotone"
                   dataKey="value"
-                  stroke="#4f46e5"
+                  stroke="var(--chart-2)"
                   strokeWidth={2}
-                  dot={{ r: 3 }}
+                  fill="url(#gradientFill)"
+                  dot={{ r: 2 }}
                   activeDot={{ r: 5 }}
                 />
-              </LineChart>
+              </AreaChart>
             </ResponsiveContainer>
           </ChartContainer>
         </TabsContent>
