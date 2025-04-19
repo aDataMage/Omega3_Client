@@ -1,7 +1,5 @@
 "use client";
 import React from "react";
-import { useTopNProducts } from "@/hooks/useProducts";
-import { useTabStore } from "@/stores/useTabStore";
 import {
   ColumnDef,
   ColumnFiltersState,
@@ -14,20 +12,20 @@ import {
   getSortedRowModel,
   useReactTable,
 } from "@tanstack/react-table";
-import { ArrowUpDown, ChevronDown, MoreHorizontal } from "lucide-react";
+
+import { useTopNProducts } from "@/hooks/useProducts";
+import { useTabStore } from "@/stores/useTabStore";
+import { TopProducts } from "@/types/product";
 
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
 import {
   DropdownMenu,
   DropdownMenuCheckboxItem,
   DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Input } from "@/components/ui/input";
 import {
   Table,
   TableBody,
@@ -36,139 +34,107 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { ChevronDown } from "lucide-react";
+import {
+  Select,
+  SelectTrigger,
+  SelectValue,
+  SelectContent,
+  SelectItem,
+} from "@radix-ui/react-select";
 
-const data: Payment[] = [
+// ✅ COLUMNS
+const columns: ColumnDef<TopProducts>[] = [
   {
-    id: "m5gr84i9",
-    amount: 316,
-    status: "success",
-    email: "ken99@example.com",
+    accessorKey: "product_name",
+    header: "Product Name",
+    cell: ({ row }) => <div>{row.getValue("product_name")}</div>,
   },
   {
-    id: "3u1reuv4",
-    amount: 242,
-    status: "success",
-    email: "Abe45@example.com",
-  },
-  {
-    id: "derv1ws0",
-    amount: 837,
-    status: "processing",
-    email: "Monserrat44@example.com",
-  },
-  {
-    id: "5kma53ae",
-    amount: 874,
-    status: "success",
-    email: "Silas22@example.com",
-  },
-  {
-    id: "bhqecj4p",
-    amount: 721,
-    status: "failed",
-    email: "carmella@example.com",
-  },
-];
-
-export type Payment = {
-  id: string;
-  amount: number;
-  status: "pending" | "processing" | "success" | "failed";
-  email: string;
-};
-
-export const columns: ColumnDef<Payment>[] = [
-  {
-    id: "select",
-    header: ({ table }) => (
-      <Checkbox
-        checked={
-          table.getIsAllPageRowsSelected() ||
-          (table.getIsSomePageRowsSelected() && "indeterminate")
-        }
-        onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
-        aria-label="Select all"
-      />
-    ),
-    cell: ({ row }) => (
-      <Checkbox
-        checked={row.getIsSelected()}
-        onCheckedChange={(value) => row.toggleSelected(!!value)}
-        aria-label="Select row"
-      />
-    ),
-    enableSorting: false,
-    enableHiding: false,
-  },
-  {
-    accessorKey: "status",
-    header: "Status",
-    cell: ({ row }) => (
-      <div className="capitalize">{row.getValue("status")}</div>
-    ),
-  },
-  {
-    accessorKey: "email",
-    header: ({ column }) => {
-      return (
-        <Button
-          variant="ghost"
-          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-        >
-          Email
-          <ArrowUpDown />
-        </Button>
-      );
-    },
-    cell: ({ row }) => <div className="lowercase">{row.getValue("email")}</div>,
-  },
-  {
-    accessorKey: "amount",
-    header: () => <div className="text-right">Amount</div>,
+    accessorKey: "brand_name",
+    header: "Brand",
     cell: ({ row }) => {
-      const amount = parseFloat(row.getValue("amount"));
+      const raw = row.getValue("brand_name") as string;
+      const formatted = raw
+        .replace(/([A-Z])/g, " $1") // Add space before each uppercase letter
+        .trim() // Remove leading space
+        .toLowerCase() // Convert to lowercase
+        .replace(/\b\w/g, (c) => c.toUpperCase()); // Capitalize each word
+      return <div>{formatted}</div>;
+    },
+  },
+  {
+    accessorKey: "category",
+    header: "Category",
+    cell: ({ row }) => {
+      const raw = row.getValue("category") as string;
+      const formatted = raw
+        .split("_")
+        .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+        .join(" ");
+      return <div>{formatted}</div>;
+    },
+  },
 
-      // Format the amount as a dollar amount
+  {
+    accessorKey: "price",
+    header: () => <div className="text-right">Price</div>,
+    cell: ({ row }) => {
+      const amount = parseFloat(row.getValue("price"));
       const formatted = new Intl.NumberFormat("en-US", {
         style: "currency",
         currency: "USD",
       }).format(amount);
-
       return <div className="text-right font-medium">{formatted}</div>;
     },
   },
   {
-    id: "actions",
-    enableHiding: false,
-    cell: ({ row }) => {
-      const payment = row.original;
+    accessorKey: "metric_value",
+    header: ({ table }) => {
+      // Get the first row's metric_key to determine the header
+      const firstRow = table.getCoreRowModel().flatRows[0];
+      const metric = firstRow?.original.metric_key ?? "Metric";
+
+      // Map metric keys to display names
+      const headerMap: Record<string, string> = {
+        "Total Sales": "Total Sales",
+        "Total Orders": "Order Count",
+        "Total Returns": "Return Count",
+        "Total Profit": "Total Profit",
+      };
 
       return (
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="ghost" className="h-8 w-8 p-0">
-              <span className="sr-only">Open menu</span>
-              <MoreHorizontal />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            <DropdownMenuLabel>Actions</DropdownMenuLabel>
-            <DropdownMenuItem
-              onClick={() => navigator.clipboard.writeText(payment.id)}
-            >
-              Copy payment ID
-            </DropdownMenuItem>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem>View customer</DropdownMenuItem>
-            <DropdownMenuItem>View payment details</DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
+        <div className="text-right font-bold">
+          {headerMap[metric] || "Metric"}
+        </div>
       );
+    },
+    cell: ({ row }) => {
+      const value = parseFloat(row.getValue("metric_value"));
+      const metric = row.original.metric_key ?? ""; // e.g., "total_sales"
+
+      const isCurrency = metric === "Total Sales" || metric === "Total Profit";
+
+      const formatted = isCurrency
+        ? new Intl.NumberFormat("en-US", {
+            style: "currency",
+            currency: "USD",
+          }).format(value)
+        : value.toLocaleString();
+
+      return <div className="text-right font-semibold">{formatted}</div>;
     },
   },
 ];
 
 export function DataTableDemo() {
+  const { activeTab } = useTabStore();
+  const [topN, setTopN] = React.useState(5);
+  const { data: allData = [], isLoading } = useTopNProducts(50, activeTab);
+
+  const displayedData = React.useMemo(() => {
+    return allData.slice(0, topN);
+  }, [allData, topN]);
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     []
@@ -178,7 +144,7 @@ export function DataTableDemo() {
   const [rowSelection, setRowSelection] = React.useState({});
 
   const table = useReactTable({
-    data,
+    data: displayedData,
     columns,
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,
@@ -196,29 +162,102 @@ export function DataTableDemo() {
     },
   });
 
+  if (isLoading) return <div>Loading...</div>;
+  if (!displayedData.length) return <div>No data available</div>;
+
   return (
-    <div className="w-full">
-      <div className="flex items-center py-4">
+    <div className="w-full ">
+      <div className="flex items-center justify-between py-4">
+        {/* Filter by Product Name */}
         <Input
-          placeholder="Filter emails..."
-          value={(table.getColumn("email")?.getFilterValue() as string) ?? ""}
-          onChange={(event) =>
-            table.getColumn("email")?.setFilterValue(event.target.value)
+          placeholder="Filter by name..."
+          value={
+            (table.getColumn("product_name")?.getFilterValue() as string) ?? ""
           }
-          className="max-w-sm"
+          onChange={(event) =>
+            table.getColumn("product_name")?.setFilterValue(event.target.value)
+          }
+          className="max-w-xs"
         />
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="outline" className="ml-auto">
-              Columns <ChevronDown />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            {table
-              .getAllColumns()
-              .filter((column) => column.getCanHide())
-              .map((column) => {
-                return (
+
+        {/* Filter by Category */}
+        <Select
+          value={
+            (table.getColumn("category")?.getFilterValue() as string) ?? "..."
+          }
+          onValueChange={(value) =>
+            table.getColumn("category")?.setFilterValue(value)
+          }
+        >
+          <SelectTrigger className="w-[180px]">
+            <SelectValue placeholder="Filter by category" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="...">All Categories</SelectItem>
+            {Array.from(new Set(allData.map((item) => item.category))).map(
+              (category) => (
+                <SelectItem key={category} value={category}>
+                  {category}
+                </SelectItem>
+              )
+            )}
+          </SelectContent>
+        </Select>
+
+        {/* Filter by Brand */}
+        <Select
+          value={
+            (table.getColumn("brand_name")?.getFilterValue() as string) ?? "..."
+          }
+          onValueChange={(value) =>
+            table.getColumn("brand_name")?.setFilterValue(value)
+          }
+        >
+          <SelectTrigger className="w-[180px]">
+            <SelectValue placeholder="Filter by brand" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="...">All Brands</SelectItem>
+            {Array.from(new Set(allData.map((item) => item.brand_name))).map(
+              (brand) => (
+                <SelectItem key={brand} value={brand}>
+                  {brand}
+                </SelectItem>
+              )
+            )}
+          </SelectContent>
+        </Select>
+
+        {/* Top N Selector */}
+        <div className="flex items-center space-x-2">
+          <label htmlFor="topN" className="text-sm text-muted-foreground">
+            Top
+          </label>
+          <select
+            id="topN"
+            value={topN}
+            onChange={(e) => setTopN(Number(e.target.value))}
+            className="border px-2 py-1 rounded-md text-sm bg-background"
+          >
+            {[5, 10, 20, 50].map((n) => (
+              <option key={n} value={n}>
+                {n}
+              </option>
+            ))}
+          </select>
+
+          {/* Column Visibility Toggle */}
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="outline">
+                Columns <ChevronDown className="ml-1 h-4 w-4" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              {table
+                .getAllColumns()
+                .filter((column) => column.getCanHide())
+                .map((column) => (
                   <DropdownMenuCheckboxItem
                     key={column.id}
                     className="capitalize"
@@ -229,28 +268,28 @@ export function DataTableDemo() {
                   >
                     {column.id}
                   </DropdownMenuCheckboxItem>
-                );
-              })}
-          </DropdownMenuContent>
-        </DropdownMenu>
+                ))}
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
       </div>
+
+      {/* Table */}
       <div className="rounded-md border">
         <Table>
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (
               <TableRow key={headerGroup.id}>
-                {headerGroup.headers.map((header) => {
-                  return (
-                    <TableHead key={header.id}>
-                      {header.isPlaceholder
-                        ? null
-                        : flexRender(
-                            header.column.columnDef.header,
-                            header.getContext()
-                          )}
-                    </TableHead>
-                  );
-                })}
+                {headerGroup.headers.map((header) => (
+                  <TableHead key={header.id}>
+                    {header.isPlaceholder
+                      ? null
+                      : flexRender(
+                          header.column.columnDef.header,
+                          header.getContext()
+                        )}
+                  </TableHead>
+                ))}
               </TableRow>
             ))}
           </TableHeader>
@@ -284,11 +323,9 @@ export function DataTableDemo() {
           </TableBody>
         </Table>
       </div>
+
+      {/* Footer */}
       <div className="flex items-center justify-end space-x-2 py-4">
-        <div className="flex-1 text-sm text-muted-foreground">
-          {table.getFilteredSelectedRowModel().rows.length} of{" "}
-          {table.getFilteredRowModel().rows.length} row(s) selected.
-        </div>
         <div className="space-x-2">
           <Button
             variant="outline"
@@ -313,13 +350,3 @@ export function DataTableDemo() {
 }
 
 export default DataTableDemo;
-
-// const TopProducts = (props: Props) => {
-//   const { activeTab, setActiveTab } = useTabStore();
-//   const { data, isLoading } = useTopNProducts(5, activeTab);
-
-//   console.log(data);
-//   return <div>TopProducts</div>;
-// };
-
-// export default TopProducts;

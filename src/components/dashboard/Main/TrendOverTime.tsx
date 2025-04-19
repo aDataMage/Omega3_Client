@@ -19,6 +19,7 @@ import { cn } from "@/lib/utils";
 import { useState, useRef, useEffect } from "react";
 import { motion } from "framer-motion";
 import { useTabStore } from "@/stores/useTabStore";
+import TOTSkelenton from "./TOTSkelenton";
 
 const chartConfig = {
   value: {
@@ -51,7 +52,7 @@ const TrendOverTime = () => {
     }
   }, [activeTab, kpiTitles]);
 
-  if (isLoading) return <p>Loading...</p>;
+  if (isLoading) return <TOTSkelenton />;
   if (isError) return <p>Error loading data</p>;
   if (!data || data.length === 0) return <p>No data available</p>;
 
@@ -76,7 +77,7 @@ const TrendOverTime = () => {
             className={cn(
               "relative z-10 px-4 py-1 transition-colors",
               activeTab === title
-                ? "text-secondary-foreground"
+                ? "text-white dark:text-secondary-foreground"
                 : "text-muted-foreground"
             )}
           >

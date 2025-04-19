@@ -30,8 +30,10 @@ enum Category {
 
 export interface ProductBase {
   name: string;
-  brand: string;
+  brand_name: Brand;
   price: number;
+  cost: number;
+  category: Category;
   stock_quantity: number;
 }
 
@@ -39,6 +41,11 @@ export interface ProductCreate extends ProductBase {}
 
 export interface Product extends ProductBase {
   product_id: string;
+}
+
+export interface TopProducts extends ProductBase{
+  metric_key: string;
+  metric_value: number
 }
 
 export interface ProductUpdate extends Partial<ProductBase> {}
