@@ -36,15 +36,39 @@ import {
 } from "@/components/ui/table";
 import { ChevronDown } from "lucide-react";
 import {
+  SelectLabel,
   Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
   SelectTrigger,
   SelectValue,
-  SelectContent,
-  SelectItem,
-} from "@radix-ui/react-select";
+} from "@/components/ui/select";
+import { Badge } from "@/components/ui/badge";
+import { useDateRangeStore } from "@/stores/useDateRangeStore";
 
 // ✅ COLUMNS
 const columns: ColumnDef<TopProducts>[] = [
+  {
+    accessorKey: "rank",
+    header: "Rank",
+    cell: ({ row, table }) => {
+      const pageIndex = table.getState().pagination.pageIndex;
+      const pageSize = table.getState().pagination.pageSize;
+      const globalRank = pageIndex * pageSize + row.index + 1;
+
+      let badgeClass = "bg-gray-100 text-gray-800";
+      if (globalRank === 1) badgeClass = "bg-yellow-400 text-yellow-900";
+      else if (globalRank === 2) badgeClass = "bg-gray-300 text-gray-900";
+      else if (globalRank === 3) badgeClass = "bg-amber-600 text-amber-100";
+
+      return (
+        <div className="flex justify-center">
+          <Badge className={`text-[0.7rem] ${badgeClass}`}>#{globalRank}</Badge>
+        </div>
+      );
+    },
+  },
   {
     accessorKey: "product_name",
     header: "Product Name",
@@ -78,14 +102,20 @@ const columns: ColumnDef<TopProducts>[] = [
 
   {
     accessorKey: "price",
-    header: () => <div className="text-right">Price</div>,
+    header: () => (
+      <div className="text-right font-bold dark:text-gray-300">Price</div>
+    ),
     cell: ({ row }) => {
       const amount = parseFloat(row.getValue("price"));
       const formatted = new Intl.NumberFormat("en-US", {
         style: "currency",
         currency: "USD",
       }).format(amount);
-      return <div className="text-right font-medium">{formatted}</div>;
+      return (
+        <div className="text-right font-light font-mono text-xs">
+          {formatted}
+        </div>
+      );
     },
   },
   {
@@ -104,7 +134,7 @@ const columns: ColumnDef<TopProducts>[] = [
       };
 
       return (
-        <div className="text-right font-bold">
+        <div className="text-right font-bold dark:text-gray-300">
           {headerMap[metric] || "Metric"}
         </div>
       );
@@ -122,18 +152,25 @@ const columns: ColumnDef<TopProducts>[] = [
           }).format(value)
         : value.toLocaleString();
 
-      return <div className="text-right font-semibold">{formatted}</div>;
+      return (
+        <div className="text-right font-mono font-light text-xs">
+          {formatted}
+        </div>
+      );
     },
   },
 ];
 
 export function DataTableDemo() {
   const { activeTab } = useTabStore();
-  const [topN, setTopN] = React.useState(5);
+  const [topN, setTopN] = React.useState(10);
   const { data: allData = [], isLoading } = useTopNProducts(50, activeTab);
 
   const displayedData = React.useMemo(() => {
-    return allData.slice(0, topN);
+    return allData.slice(0, topN).map((item, index) => ({
+      ...item,
+      rank: index + 1, // Add rank property to each item
+    }));
   }, [allData, topN]);
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
@@ -150,6 +187,12 @@ export function DataTableDemo() {
     onColumnFiltersChange: setColumnFilters,
     getCoreRowModel: getCoreRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
+    initialState: {
+      // Add this
+      pagination: {
+        pageSize: 10, // Set default page size to 10
+      },
+    },
     getSortedRowModel: getSortedRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
     onColumnVisibilityChange: setColumnVisibility,
@@ -167,7 +210,7 @@ export function DataTableDemo() {
 
   return (
     <div className="w-full ">
-      <div className="flex items-center justify-between py-4">
+      <div className="flex items-center justify-between py-4 space-x-2">
         {/* Filter by Product Name */}
         <Input
           placeholder="Filter by name..."
@@ -177,23 +220,27 @@ export function DataTableDemo() {
           onChange={(event) =>
             table.getColumn("product_name")?.setFilterValue(event.target.value)
           }
-          className="max-w-xs"
+          className="max-w-xs min-w-[10rem]"
         />
 
         {/* Filter by Category */}
         <Select
           value={
-            (table.getColumn("category")?.getFilterValue() as string) ?? "..."
+            (table.getColumn("category")?.getFilterValue() as string) ?? ""
           }
-          onValueChange={(value) =>
-            table.getColumn("category")?.setFilterValue(value)
-          }
+          onValueChange={(value) => {
+            if (value === "all") {
+              table.getColumn("category")?.setFilterValue(undefined);
+            } else {
+              table.getColumn("category")?.setFilterValue(value);
+            }
+          }}
         >
           <SelectTrigger className="w-[180px]">
             <SelectValue placeholder="Filter by category" />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="...">All Categories</SelectItem>
+            <SelectItem value="all">All Categories</SelectItem>
             {Array.from(new Set(allData.map((item) => item.category))).map(
               (category) => (
                 <SelectItem key={category} value={category}>
@@ -203,21 +250,24 @@ export function DataTableDemo() {
             )}
           </SelectContent>
         </Select>
-
         {/* Filter by Brand */}
         <Select
           value={
-            (table.getColumn("brand_name")?.getFilterValue() as string) ?? "..."
+            (table.getColumn("brand_name")?.getFilterValue() as string) ?? ""
           }
-          onValueChange={(value) =>
-            table.getColumn("brand_name")?.setFilterValue(value)
-          }
+          onValueChange={(value) => {
+            if (value === "all") {
+              table.getColumn("brand_name")?.setFilterValue(undefined);
+            } else {
+              table.getColumn("brand_name")?.setFilterValue(value);
+            }
+          }}
         >
           <SelectTrigger className="w-[180px]">
             <SelectValue placeholder="Filter by brand" />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="...">All Brands</SelectItem>
+            <SelectItem value="all">All Brands</SelectItem>
             {Array.from(new Set(allData.map((item) => item.brand_name))).map(
               (brand) => (
                 <SelectItem key={brand} value={brand}>
@@ -239,47 +289,21 @@ export function DataTableDemo() {
             onChange={(e) => setTopN(Number(e.target.value))}
             className="border px-2 py-1 rounded-md text-sm bg-background"
           >
-            {[5, 10, 20, 50].map((n) => (
+            {[10, 20, 50].map((n) => (
               <option key={n} value={n}>
                 {n}
               </option>
             ))}
           </select>
-
-          {/* Column Visibility Toggle */}
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="outline">
-                Columns <ChevronDown className="ml-1 h-4 w-4" />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-              {table
-                .getAllColumns()
-                .filter((column) => column.getCanHide())
-                .map((column) => (
-                  <DropdownMenuCheckboxItem
-                    key={column.id}
-                    className="capitalize"
-                    checked={column.getIsVisible()}
-                    onCheckedChange={(value) =>
-                      column.toggleVisibility(!!value)
-                    }
-                  >
-                    {column.id}
-                  </DropdownMenuCheckboxItem>
-                ))}
-            </DropdownMenuContent>
-          </DropdownMenu>
         </div>
       </div>
 
       {/* Table */}
-      <div className="rounded-md border">
+      <div className="rounded-md border border-chart-2 shadow-xs  w-full">
         <Table>
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (
-              <TableRow key={headerGroup.id}>
+              <TableRow key={headerGroup.id} className="border-chart-2">
                 {headerGroup.headers.map((header) => (
                   <TableHead key={header.id}>
                     {header.isPlaceholder
@@ -293,12 +317,13 @@ export function DataTableDemo() {
               </TableRow>
             ))}
           </TableHeader>
-          <TableBody>
+          <TableBody className="border-chart-2">
             {table.getRowModel().rows?.length ? (
               table.getRowModel().rows.map((row) => (
                 <TableRow
                   key={row.id}
                   data-state={row.getIsSelected() && "selected"}
+                  className="border-chart-2"
                 >
                   {row.getVisibleCells().map((cell) => (
                     <TableCell key={cell.id}>

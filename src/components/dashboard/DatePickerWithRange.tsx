@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from "react";
-import { addDays, format } from "date-fns";
+import { format } from "date-fns";
 import { Calendar as CalendarIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -12,14 +12,22 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { CustomSelectDropdown } from "./CustomDropdown"; // Import your custom dropdown
 
 export function DatePickerWithRange({
   className,
 }: React.HTMLAttributes<HTMLDivElement>) {
   const { dateRange, setDateRange } = useDateRangeStore();
-  const minDate = new Date(2023, 0, 1); // Jan 1, 2023
-  const maxDate = new Date(); // today
+  const [tempRange, setTempRange] = React.useState({
+    from: dateRange.from,
+    to: dateRange.to,
+  });
+  const minDate = new Date(2023, 0, 1);
+  const maxDate = new Date();
+
+  const handleApply = () => {
+    setDateRange(tempRange);
+    // Add your data fetching logic here or trigger a parent component's fetch
+  };
 
   return (
     <div className={cn("grid gap-2", className)}>
@@ -33,7 +41,7 @@ export function DatePickerWithRange({
               !dateRange.from && "text-muted-foreground"
             )}
           >
-            <CalendarIcon />
+            <CalendarIcon className="mr-2 h-4 w-4" />
             {dateRange.from ? (
               dateRange.to ? (
                 <>
@@ -49,21 +57,29 @@ export function DatePickerWithRange({
           </Button>
         </PopoverTrigger>
         <PopoverContent className="w-auto p-0" align="start">
-          {/* Use CustomDropdown for selecting dates */}
           <Calendar
             initialFocus
             mode="range"
-            defaultMonth={dateRange.from}
-            selected={dateRange}
+            defaultMonth={tempRange.from}
+            selected={{
+              from: tempRange.from,
+              to: tempRange.to,
+            }}
+            onSelect={(range) => {
+              setTempRange({
+                from: range?.from || tempRange.from,
+                to: range?.to || tempRange.to,
+              });
+            }}
             fromDate={minDate}
             toDate={maxDate}
-            onSelect={setDateRange}
             numberOfMonths={2}
-            // captionLayout="dropdown" // Switch to dropdown mode
-            components={{
-              Dropdown: CustomSelectDropdown, // Use CustomDropdown here
-            }}
           />
+          <div className="p-2 border-t flex justify-end">
+            <Button size="sm" onClick={handleApply} disabled={!tempRange.from}>
+              Apply
+            </Button>
+          </div>
         </PopoverContent>
       </Popover>
     </div>

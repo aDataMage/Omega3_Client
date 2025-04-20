@@ -16,4 +16,10 @@ export interface Store extends StoreBase {
   store_id: string;
 }
 
+export interface TopStores extends StoreBase{
+  metric_key: string;
+  metric_value: number
+  top_product_name: string
+}
+
 export interface StoreUpdate extends Partial<StoreBase> {}

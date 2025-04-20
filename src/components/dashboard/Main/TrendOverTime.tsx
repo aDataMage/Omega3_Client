@@ -15,6 +15,7 @@ import { ChartContainer, ChartConfig } from "@/components/ui/chart";
 import { Tabs, TabsContent, TabsList } from "@/components/ui/tabs";
 import { useKpis } from "@/hooks/useKpi";
 import { formatCurrency } from "@/utils/formatCurrency";
+import { formatChartDate } from "@/utils/fomartChartDate";
 import { cn } from "@/lib/utils";
 import { useState, useRef, useEffect } from "react";
 import { motion } from "framer-motion";
@@ -57,7 +58,7 @@ const TrendOverTime = () => {
   if (!data || data.length === 0) return <p>No data available</p>;
 
   return (
-    <Tabs value={activeTab ?? ""} className="w-full h-[300px] overflow-hidden">
+    <Tabs value={activeTab ?? ""} className="w-full h-[400px] overflow-hidden">
       <TabsList className="relative inline-flex  bg-muted p-1 rounded-md overflow-hidden h-10 shadow-xs shadow-accent/15">
         {/* Sliding indicator */}
         <motion.div
@@ -122,8 +123,16 @@ const TrendOverTime = () => {
                   stroke="var(--foreground)"
                   opacity={0.1}
                 />
-                <XAxis dataKey="date" tick={{ fontSize: 12 }} />
-                <YAxis tick={{ fontSize: 12 }} tickFormatter={formatCurrency} />
+                <YAxis
+                  tick={{ fontSize: 12 }}
+                  tickFormatter={(value) => formatCurrency(value, activeTab)}
+                />
+                <XAxis
+                  dataKey="date"
+                  tick={{ fontSize: 12 }}
+                  tickFormatter={formatChartDate} // Add this
+                />
+
                 <Tooltip
                   contentStyle={{
                     backgroundColor: "#1f2937",
@@ -132,6 +141,11 @@ const TrendOverTime = () => {
                     color: "#fff",
                   }}
                   labelStyle={{ color: "#d1d5db" }}
+                  labelFormatter={formatChartDate} // Use the same formatter
+                  formatter={(value) => [
+                    formatCurrency(Number(value), activeTab),
+                    chartConfig.value.label,
+                  ]}
                 />
                 <Area
                   type="monotone"

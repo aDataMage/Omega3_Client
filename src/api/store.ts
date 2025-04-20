@@ -1,5 +1,5 @@
 import axios from "@/lib/axios";
-import { Store, StoreCreate, StoreUpdate } from "../types/store";
+import { Store, StoreCreate, StoreUpdate, TopStores } from "../types/store";
 
 const BASE_URL = "/stores";
 
@@ -58,10 +58,21 @@ export const deleteStore = async (storeId: string): Promise<void> => {
   }
 };
 
+export const getTopNStoreByMetric = async (metric: string, n: number, start_date: string | undefined, end_date: string | undefined): Promise<TopStores[]> => {
+  try {
+    const response = await axios.get<TopStores[]>(`${BASE_URL}/top/?metric=${metric}&n=${n}&start_date=${start_date}&end_date=${end_date}`);
+    return response.data;
+  } catch (error) {
+    console.error(`Error fetching top ${n} stores by ${metric}:`, error);
+    throw error;
+  }
+};
+
 export default {
   fetchStores,
   fetchStore,
   createStore,
   updateStore,
   deleteStore,
+  getTopNStoreByMetric
 };

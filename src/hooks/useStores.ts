@@ -4,9 +4,12 @@ import {
   createStore,
   updateStore,
   deleteStore,
+  getTopNStoreByMetric
 } from "@/api/store";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { Store, StoreCreate, StoreUpdate } from "@/types/store";
+import { Store, StoreCreate, StoreUpdate, TopStores } from "@/types/store";
+import { useDateRangeStore } from "@/stores/useDateRangeStore";
+import { DateRange } from "react-day-picker";
 
 // Get all stores
 export const useStores = () => {
@@ -66,3 +69,14 @@ export const useDeleteStore = () => {
     },
   });
 };
+
+export const useTopNStores = (n: number, metric: string, dateRange: DateRange) => {
+  const startDate = dateRange?.from?.toISOString().split("T")[0];
+  const endDate = dateRange?.to?.toISOString().split("T")[0];
+  return useQuery<TopStores[]>({
+    queryKey: ["stores", "top", n, metric],
+    queryFn: () => getTopNStoreByMetric(metric, n, startDate, endDate), // Replace with actual API call for top products
+    enabled: !!n && !!metric,
+  });
+
+}

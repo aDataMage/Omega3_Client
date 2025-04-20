@@ -164,4 +164,16 @@
   body {
     @apply bg-background text-foreground;
   }
+  /* Ensure calendar headers align properly */
+  .rdp-dropdowns {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+  }
+
+  /* Style the dropdown containers */
+  .rdp-dropdown {
+    margin: 0;
+    padding: 0;
+}
 }

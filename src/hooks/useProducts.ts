@@ -8,6 +8,7 @@ import {
 } from "@/api/product";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Product, ProductCreate, ProductUpdate, TopProducts } from "@/types/product";
+import {useDateRangeStore} from "@/stores/useDateRangeStore"
 
 // Get all products
 export const useProducts = () => {
@@ -69,9 +70,13 @@ export const useDeleteProduct = () => {
 };
 
 export const useTopNProducts = (n: number, metric: string) => {
+  const { dateRange } = useDateRangeStore();
+  const startDate = dateRange?.from?.toISOString().split("T")[0];
+  const endDate = dateRange?.to?.toISOString().split("T")[0];
   return useQuery<TopProducts[]>({
     queryKey: ["products", "top", n, metric],
-    queryFn: () => getTopNProductByMetric(metric, n), // Replace with actual API call for top products
+    queryFn: () => getTopNProductByMetric(metric, n, startDate, endDate), // Replace with actual API call for top products
     enabled: !!n && !!metric,
   });
+ 
 }

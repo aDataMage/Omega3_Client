@@ -58,9 +58,9 @@ export const deleteProduct = async (productId: string): Promise<void> => {
   }
 };
 
-export const getTopNProductByMetric = async (metric: string, n: number): Promise<TopProducts[]> => {
+export const getTopNProductByMetric = async (metric: string, n: number, start_date: string | undefined, end_date: string | undefined): Promise<TopProducts[]> => {
   try {
-    const response = await axios.get<Product[]>(`${BASE_URL}/top/?metric=${metric}&n=${n}&start_date=2023-12-31&end_date=2025-04-16`);
+    const response = await axios.get<TopProducts[]>(`${BASE_URL}/top/?metric=${metric}&n=${n}&start_date=${start_date}&end_date=${end_date}`);
     return response.data;
   } catch (error) {
     console.error(`Error fetching top ${n} products by ${metric}:`, error);
