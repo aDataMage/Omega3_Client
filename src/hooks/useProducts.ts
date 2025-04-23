@@ -5,6 +5,8 @@ import {
   updateProduct,
   deleteProduct,
   getTopNProductByMetric,
+  getBrands,
+  getProductNames
 } from "@/api/product";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Product, ProductCreate, ProductUpdate, TopProducts } from "@/types/product";
@@ -15,6 +17,18 @@ export const useProducts = () => {
   return useQuery<Product[]>({
     queryKey: ["products"],
     queryFn: fetchProducts,
+  });
+};
+export const useBrands = () => {
+  return useQuery<string[]>({
+    queryKey: ["brands"],
+    queryFn: getBrands,
+  });
+};
+export const useProductsNames = () => {
+  return useQuery<string[]>({
+    queryKey: ["productsNames"],
+    queryFn: getProductNames,
   });
 };
 
@@ -34,7 +48,7 @@ export const useCreateProduct = () => {
   return useMutation({
     mutationFn: (data: ProductCreate) => createProduct(data),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["products"] });
+      queryClient.invalidateQueries({ queryKey: ["products","productsNames"] });
     },
   });
 };
@@ -52,7 +66,7 @@ export const useUpdateProduct = () => {
       data: ProductUpdate;
     }) => updateProduct(productId, data),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["products"] });
+      queryClient.invalidateQueries({ queryKey: ["products","productsNames"] });
     },
   });
 };
@@ -64,7 +78,7 @@ export const useDeleteProduct = () => {
   return useMutation({
     mutationFn: (productId: string) => deleteProduct(productId),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["products"] });
+      queryClient.invalidateQueries({ queryKey: ["products","productsNames"] });
     },
   });
 };

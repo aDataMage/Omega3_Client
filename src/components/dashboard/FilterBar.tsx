@@ -1,7 +1,7 @@
 "use client";
 import { Button } from "@/components/ui/button";
 import { useDateRangeStore } from "@/stores/useDateRangeStore";
-import { DatePickerWithRange } from "@/components/dashboard/DatePickerWithRange";
+import { DatePickerWithRange } from "@/components/shared/DatePickerWithRange";
 import { addDays } from "date-fns";
 
 const FilterBar = () => {

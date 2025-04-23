@@ -6,3 +6,4 @@ export {default as FilterBar} from './dashboard/FilterBar';
 export {default as TrendOverTime} from './dashboard/Main/TrendOverTime';
 export {default as TopProducts} from './dashboard/Main/TopProducts';
 export {default as TopStores} from './dashboard/Main/TopStores';
+export {default as AppSideBar} from './insightPage/SidePane'

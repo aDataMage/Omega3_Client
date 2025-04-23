@@ -68,11 +68,33 @@ export const getTopNStoreByMetric = async (metric: string, n: number, start_date
   }
 };
 
+export const getRegions = async () => {
+  try{
+    const response = await axios.get<string[]>(`${BASE_URL}/filters/regions`);
+    return response.data;
+  } catch (error){
+    console.error(`Error fetching Regoins`, error);
+    throw error;
+  }
+}
+
+export const getStoreNames = async () => {
+  try{
+    const response = await axios.get<string[]>(`${BASE_URL}/filters/stores`);
+    return response.data;
+  } catch (error){
+    console.error(`Error fetching Store Names`, error);
+    throw error;
+  }
+}
+
 export default {
   fetchStores,
   fetchStore,
   createStore,
   updateStore,
   deleteStore,
-  getTopNStoreByMetric
+  getTopNStoreByMetric,
+  getRegions, 
+  getStoreNames,
 };

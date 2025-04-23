@@ -68,6 +68,28 @@ export const getTopNProductByMetric = async (metric: string, n: number, start_da
   }
 };
 
+export const getBrands = async () => {
+  try{
+    const response = await axios.get<string[]>(`${BASE_URL}/filters/brands`);
+    return response.data;
+  } catch (error){
+    console.error(`Error fetching brands`, error);
+    throw error;
+  }
+}
+
+export const getProductNames= async () => {
+  try{
+    const response = await axios.get<string[]>(`${BASE_URL}/filters/products`);
+    return response.data;
+  } catch (error){
+    console.error(`Error fetching Product Names`, error);
+    throw error;
+  }
+}
+
+
+
 export default {
   fetchProducts,
   fetchProduct,
@@ -75,4 +97,6 @@ export default {
   updateProduct,
   deleteProduct,
   getTopNProductByMetric,
+  getBrands,
+  getProductNames,
 };

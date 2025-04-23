@@ -4,7 +4,9 @@ import {
   createStore,
   updateStore,
   deleteStore,
-  getTopNStoreByMetric
+  getTopNStoreByMetric, 
+  getRegions,
+  getStoreNames
 } from "@/api/store";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Store, StoreCreate, StoreUpdate, TopStores } from "@/types/store";
@@ -16,6 +18,18 @@ export const useStores = () => {
   return useQuery<Store[]>({
     queryKey: ["stores"],
     queryFn: fetchStores,
+  });
+};
+export const useRegions= () => {
+  return useQuery<string[]>({
+    queryKey: ["regoin"],
+    queryFn: getRegions,
+  });
+};
+export const useStoresNames = () => {
+  return useQuery<string[]>({
+    queryKey: ["storesName"],
+    queryFn: getStoreNames,
   });
 };
 
@@ -35,7 +49,7 @@ export const useCreateStore = () => {
   return useMutation({
     mutationFn: (data: StoreCreate) => createStore(data),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["stores"] });
+      queryClient.invalidateQueries({ queryKey: ["stores","storesName"] });
     },
   });
 };
@@ -53,7 +67,7 @@ export const useUpdateStore = () => {
       data: StoreUpdate;
     }) => updateStore(storeId, data),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["stores"] });
+      queryClient.invalidateQueries({ queryKey: ["stores","storesName"] });
     },
   });
 };
@@ -65,7 +79,7 @@ export const useDeleteStore = () => {
   return useMutation({
     mutationFn: (storeId: string) => deleteStore(storeId),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["stores"] });
+      queryClient.invalidateQueries({ queryKey: ["stores","storesName"] });
     },
   });
 };
