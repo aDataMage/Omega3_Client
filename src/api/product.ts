@@ -1,5 +1,10 @@
 import axios from "@/lib/axios";
-import { Product, ProductCreate, ProductUpdate, TopProducts } from "../types/product";
+import {
+  Product,
+  ProductCreate,
+  ProductUpdate,
+  TopProducts,
+} from "../types/product";
 
 const BASE_URL = "/products";
 
@@ -9,7 +14,7 @@ export const fetchProducts = async (): Promise<Product[]> => {
     const response = await axios.get<Product[]>(BASE_URL);
     return response.data;
   } catch (error) {
-    console.error('Error fetching products:', error);
+    console.error("Error fetching products:", error);
     throw error;
   }
 };
@@ -26,20 +31,28 @@ export const fetchProduct = async (productId: string): Promise<Product> => {
 };
 
 // Create a new product
-export const createProduct = async (productData: ProductCreate): Promise<Product> => {
+export const createProduct = async (
+  productData: ProductCreate
+): Promise<Product> => {
   try {
     const response = await axios.post<Product>(BASE_URL, productData);
     return response.data;
   } catch (error) {
-    console.error('Error creating product:', error);
+    console.error("Error creating product:", error);
     throw error;
   }
 };
 
 // Update an existing product
-export const updateProduct = async (productId: string, productData: ProductUpdate): Promise<Product> => {
+export const updateProduct = async (
+  productId: string,
+  productData: ProductUpdate
+): Promise<Product> => {
   try {
-    const response = await axios.put<Product>(`${BASE_URL}/${productId}`, productData);
+    const response = await axios.put<Product>(
+      `${BASE_URL}/${productId}`,
+      productData
+    );
     return response.data;
   } catch (error) {
     console.error(`Error updating product ${productId}:`, error);
@@ -58,9 +71,16 @@ export const deleteProduct = async (productId: string): Promise<void> => {
   }
 };
 
-export const getTopNProductByMetric = async (metric: string, n: number, start_date: string | undefined, end_date: string | undefined): Promise<TopProducts[]> => {
+export const getTopNProductByMetric = async (
+  metric: string,
+  n: number,
+  start_date: string | undefined,
+  end_date: string | undefined
+): Promise<TopProducts[]> => {
   try {
-    const response = await axios.get<TopProducts[]>(`${BASE_URL}/top/?metric=${metric}&n=${n}&start_date=${start_date}&end_date=${end_date}`);
+    const response = await axios.get<TopProducts[]>(
+      `${BASE_URL}/top/?metric=${metric}&n=${n}&start_date=${start_date}&end_date=${end_date}`
+    );
     return response.data;
   } catch (error) {
     console.error(`Error fetching top ${n} products by ${metric}:`, error);
@@ -69,26 +89,26 @@ export const getTopNProductByMetric = async (metric: string, n: number, start_da
 };
 
 export const getBrands = async () => {
-  try{
+  try {
     const response = await axios.get<string[]>(`${BASE_URL}/filters/brands`);
     return response.data;
-  } catch (error){
+  } catch (error) {
     console.error(`Error fetching brands`, error);
     throw error;
   }
-}
+};
 
-export const getProductNames= async () => {
-  try{
-    const response = await axios.get<string[]>(`${BASE_URL}/filters/products`);
+export const getProductNames = async (brandNames: string[] | undefined) => {
+  try {
+    const response = await axios.get<{ product_id: string; name: string }[]>(
+      `${BASE_URL}/filters/products?selected_brands=${brandNames}`
+    );
     return response.data;
-  } catch (error){
+  } catch (error) {
     console.error(`Error fetching Product Names`, error);
     throw error;
   }
-}
-
-
+};
 
 export default {
   fetchProducts,

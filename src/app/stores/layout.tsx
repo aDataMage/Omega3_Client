@@ -13,7 +13,7 @@ export default async function Layout({
   return (
     <SidebarProvider defaultOpen={defaultOpen}>
       <AppSideBar />
-      <main>
+      <main className="w-full mx-0 px-0">
         <SidebarTrigger />
         {children}
       </main>

@@ -57,7 +57,13 @@ function InsightsSidebar() {
     setSelectedProducts,
     setSelectedStores,
     stores,
+    applyFilters,
+    resetAllFilters, // Add this to your store if not already present
   } = useInsightsStore();
+
+  // const { data: dateRange, setDateRange } = useDateRangeStore();
+  const { refetch } = useInsight("Total Sales"); // Or use the appropriate metric
+  const [error, setError] = useState<string | null>(null);
 
   const filters = [
     {
@@ -95,6 +101,23 @@ function InsightsSidebar() {
   ];
 
   useInitializeFilters();
+
+  const handleApplyFilters = () => {
+    try {
+      applyFilters();
+      setError(null);
+    } catch (err: any) {
+      setError(err.message);
+    }
+  };
+
+  const handleResetAll = () => {
+    // Reset all filters to their initial state
+    resetAllFilters();
+    // setDateRange(undefined);
+    // After resetting, refetch the data
+    refetch();
+  };
 
   return (
     <Sidebar className="border-r">
@@ -163,10 +186,14 @@ function InsightsSidebar() {
 
         {/* Action Buttons */}
         <div className="p-4 space-y-2">
-          <Button className="w-full" variant="default">
+          <Button
+            className="w-full"
+            variant="default"
+            onClick={handleApplyFilters}
+          >
             Apply Filters
           </Button>
-          <Button className="w-full" variant="outline">
+          <Button className="w-full" variant="outline" onClick={handleResetAll}>
             Reset All
           </Button>
         </div>

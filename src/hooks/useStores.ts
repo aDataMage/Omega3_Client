@@ -4,9 +4,9 @@ import {
   createStore,
   updateStore,
   deleteStore,
-  getTopNStoreByMetric, 
+  getTopNStoreByMetric,
   getRegions,
-  getStoreNames
+  getStoreNames,
 } from "@/api/store";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Store, StoreCreate, StoreUpdate, TopStores } from "@/types/store";
@@ -20,16 +20,17 @@ export const useStores = () => {
     queryFn: fetchStores,
   });
 };
-export const useRegions= () => {
+export const useRegions = () => {
   return useQuery<string[]>({
     queryKey: ["regoin"],
     queryFn: getRegions,
   });
 };
-export const useStoresNames = () => {
-  return useQuery<string[]>({
+export const useStoresNames = (selectedRegions: string[]) => {
+  return useQuery<{ store_id: string; name: string }[]>({
     queryKey: ["storesName"],
-    queryFn: getStoreNames,
+    queryFn: () => getStoreNames(selectedRegions),
+    enabled: selectedRegions.length > 0,
   });
 };
 
@@ -49,7 +50,7 @@ export const useCreateStore = () => {
   return useMutation({
     mutationFn: (data: StoreCreate) => createStore(data),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["stores","storesName"] });
+      queryClient.invalidateQueries({ queryKey: ["stores", "storesName"] });
     },
   });
 };
@@ -59,15 +60,10 @@ export const useUpdateStore = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: ({
-      storeId,
-      data,
-    }: {
-      storeId: string;
-      data: StoreUpdate;
-    }) => updateStore(storeId, data),
+    mutationFn: ({ storeId, data }: { storeId: string; data: StoreUpdate }) =>
+      updateStore(storeId, data),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["stores","storesName"] });
+      queryClient.invalidateQueries({ queryKey: ["stores", "storesName"] });
     },
   });
 };
@@ -79,12 +75,16 @@ export const useDeleteStore = () => {
   return useMutation({
     mutationFn: (storeId: string) => deleteStore(storeId),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["stores","storesName"] });
+      queryClient.invalidateQueries({ queryKey: ["stores", "storesName"] });
     },
   });
 };
 
-export const useTopNStores = (n: number, metric: string, dateRange: DateRange) => {
+export const useTopNStores = (
+  n: number,
+  metric: string,
+  dateRange: DateRange
+) => {
   const startDate = dateRange?.from?.toISOString().split("T")[0];
   const endDate = dateRange?.to?.toISOString().split("T")[0];
   return useQuery<TopStores[]>({
@@ -92,5 +92,4 @@ export const useTopNStores = (n: number, metric: string, dateRange: DateRange) =
     queryFn: () => getTopNStoreByMetric(metric, n, startDate, endDate), // Replace with actual API call for top products
     enabled: !!n && !!metric,
   });
-
-}
+};

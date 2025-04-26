@@ -6,11 +6,16 @@ import {
   deleteProduct,
   getTopNProductByMetric,
   getBrands,
-  getProductNames
+  getProductNames,
 } from "@/api/product";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { Product, ProductCreate, ProductUpdate, TopProducts } from "@/types/product";
-import {useDateRangeStore} from "@/stores/useDateRangeStore"
+import {
+  Product,
+  ProductCreate,
+  ProductUpdate,
+  TopProducts,
+} from "@/types/product";
+import { useDateRangeStore } from "@/stores/useDateRangeStore";
 
 // Get all products
 export const useProducts = () => {
@@ -25,10 +30,10 @@ export const useBrands = () => {
     queryFn: getBrands,
   });
 };
-export const useProductsNames = () => {
-  return useQuery<string[]>({
+export const useProductsNames = (brandNames: string[]) => {
+  return useQuery<{ product_id: string; name: string }[]>({
     queryKey: ["productsNames"],
-    queryFn: getProductNames,
+    queryFn: () => getProductNames(brandNames),
   });
 };
 
@@ -48,7 +53,9 @@ export const useCreateProduct = () => {
   return useMutation({
     mutationFn: (data: ProductCreate) => createProduct(data),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["products","productsNames"] });
+      queryClient.invalidateQueries({
+        queryKey: ["products", "productsNames"],
+      });
     },
   });
 };
@@ -66,7 +73,9 @@ export const useUpdateProduct = () => {
       data: ProductUpdate;
     }) => updateProduct(productId, data),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["products","productsNames"] });
+      queryClient.invalidateQueries({
+        queryKey: ["products", "productsNames"],
+      });
     },
   });
 };
@@ -78,7 +87,9 @@ export const useDeleteProduct = () => {
   return useMutation({
     mutationFn: (productId: string) => deleteProduct(productId),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["products","productsNames"] });
+      queryClient.invalidateQueries({
+        queryKey: ["products", "productsNames"],
+      });
     },
   });
 };
@@ -92,5 +103,4 @@ export const useTopNProducts = (n: number, metric: string) => {
     queryFn: () => getTopNProductByMetric(metric, n, startDate, endDate), // Replace with actual API call for top products
     enabled: !!n && !!metric,
   });
- 
-}
+};
