@@ -1,34 +1,42 @@
-import {
-  AppBar,
-  CustomersList,
-  KpiCardList,
-  SalesOverTime,
-  FilterBar,
-  TrendOverTime,
-  TopProducts,
-  TopStores,
-} from "@/components";
+import { KpiCardList, TrendOverTime, TopProducts } from "@/components";
+import TrendOverTime2 from "@/components/dashboard/Main/TOT2";
 import { DatePickerWithRange } from "@/components/shared/DatePickerWithRange";
-
-import Image from "next/image";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 export default function Home() {
   return (
-    <div className="container mx-auto my-10">
-      <div className="flex items-center mb-6 ">
+    <div className="p-6 space-y-6">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+        <h1 className="text-2xl font-bold tracking-tight">
+          Dashboard Overview
+        </h1>
         <DatePickerWithRange />
       </div>
-      <div className="flex flex-col gap-8">
-        <KpiCardList />
-        <TrendOverTime />
-        {/* <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div className="col-span-1">
+
+      <KpiCardList />
+      <TrendOverTime />
+
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <Card>
+          <CardHeader>
+            <CardTitle>Top Products</CardTitle>
+          </CardHeader>
+          <CardContent>
             <TopProducts />
-          </div>
-          <div className="col-span-1">
-            <TopStores />
-          </div>
-        </div> */}
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader>
+            <CardTitle>Top Stores</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="h-[300px] flex items-center justify-center text-muted-foreground">
+              Store data will appear here
+            </div>
+          </CardContent>
+        </Card>
       </div>
     </div>
   );

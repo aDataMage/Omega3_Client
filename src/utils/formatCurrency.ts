@@ -1,4 +1,4 @@
-import {useTabStore} from "@/stores/useTabStore"
+import { formatNumberWithSeparator } from "./formatNumber";
 
 export function formatCurrency(value: number, activeTab: string): string {
   if (activeTab == "Total Sales" || activeTab == "Total Profit")
@@ -9,6 +9,5 @@ export function formatCurrency(value: number, activeTab: string): string {
     } else {
       return `$${value.toFixed(2)}`;
     }
-  else
-    return String(value)
+  else return formatNumberWithSeparator(value);
 }

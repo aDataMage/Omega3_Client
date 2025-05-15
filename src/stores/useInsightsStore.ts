@@ -123,7 +123,7 @@ export const useInsightsStore = create<InsightsState>((set, get) => ({
       set({
         products: products.map((product: any) => ({
           label: product.name,
-          value: product.name,
+          value: product.product_id,
         })),
         selectedProducts: [], // Reset selected products when regions change
       });

@@ -1,5 +1,12 @@
 import axios from "@/lib/axios";
-import { Store, StoreCreate, StoreUpdate, TopStores } from "../types/store";
+import {
+  RegionTable,
+  Store,
+  StoreCreate,
+  StoreTable,
+  StoreUpdate,
+  TopStores,
+} from "../types/store";
 
 const BASE_URL = "/stores";
 
@@ -103,6 +110,35 @@ export const getStoreNames = async (selected_regions: string[]) => {
   }
 };
 
+export const getRegionsTable = async (
+  start_date: string | undefined,
+  end_date: string | undefined
+) => {
+  try {
+    const response = await axios.get<RegionTable[]>(
+      `${BASE_URL}/table/region?start_date=${start_date}&end_date=${end_date}`
+    );
+    return response.data;
+  } catch (error) {
+    console.error(`Error fetching region table`, error);
+    throw error;
+  }
+};
+export const getStoreTableData = async (
+  start_date: string | undefined,
+  end_date: string | undefined
+) => {
+  try {
+    const response = await axios.get<StoreTable[]>(
+      `${BASE_URL}/table/store?start_date=${start_date}&end_date=${end_date}`
+    );
+    return response.data;
+  } catch (error) {
+    console.error(`Error fetching store table`, error);
+    throw error;
+  }
+};
+
 export default {
   fetchStores,
   fetchStore,
@@ -112,4 +148,6 @@ export default {
   getTopNStoreByMetric,
   getRegions,
   getStoreNames,
+  getRegionsTable,
+  getStoreTableData,
 };

@@ -54,7 +54,7 @@ export const useInitializeFilters = () => {
       setProducts(
         productsData.map((p: { product_id: string; name: string }) => ({
           label: p.name,
-          value: p.name,
+          value: p.product_id,
         }))
       );
     }

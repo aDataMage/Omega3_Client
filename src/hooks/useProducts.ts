@@ -7,15 +7,20 @@ import {
   getTopNProductByMetric,
   getBrands,
   getProductNames,
+  getBrandsTableData,
+  getProductsTableData,
 } from "@/api/product";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import {
+  BrandsTable,
   Product,
   ProductCreate,
+  ProductsTable,
   ProductUpdate,
   TopProducts,
 } from "@/types/product";
 import { useDateRangeStore } from "@/stores/useDateRangeStore";
+import { DateRange } from "react-day-picker";
 
 // Get all products
 export const useProducts = () => {
@@ -102,5 +107,27 @@ export const useTopNProducts = (n: number, metric: string) => {
     queryKey: ["products", "top", n, metric],
     queryFn: () => getTopNProductByMetric(metric, n, startDate, endDate), // Replace with actual API call for top products
     enabled: !!n && !!metric,
+  });
+};
+
+export const useBrandsTable = (dateRange: DateRange) => {
+  const startDate = dateRange?.from?.toISOString().split("T")[0];
+  const endDate = dateRange?.to?.toISOString().split("T")[0];
+
+  return useQuery<BrandsTable[]>({
+    queryKey: ["stores", "table", startDate, endDate],
+    queryFn: () => getBrandsTableData(startDate, endDate),
+    enabled: !!dateRange?.from && !!dateRange?.to,
+  });
+};
+
+export const useProductsTable = (dateRange: DateRange) => {
+  const startDate = dateRange?.from?.toISOString().split("T")[0];
+  const endDate = dateRange?.to?.toISOString().split("T")[0];
+
+  return useQuery<ProductsTable[]>({
+    queryKey: ["stores", "table", startDate, endDate],
+    queryFn: () => getProductsTableData(startDate, endDate),
+    enabled: !!dateRange?.from && !!dateRange?.to,
   });
 };

@@ -14,6 +14,8 @@ import {
 import { formatChartDate } from "@/utils/fomartChartDate";
 import { formatCurrency } from "@/utils/formatCurrency";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { clipText } from "@/utils/clipText";
+import getComparisonColor from "@/utils/getComparisonColor";
 
 // Standard color palette (green for positive, red for negative)
 const STANDARD_COLORS = {
@@ -46,7 +48,7 @@ const calculateMomChange = (currentData: any[], index: number, key: string) => {
 };
 
 const TotalSales = () => {
-  const [currentMetric, setCurrentMetric] = React.useState("Total Sales");
+  const [currentMetric, setCurrentMetric] = React.useState("Total Returns");
   const { data, isLoading, isError } = useInsight(currentMetric);
 
   const transformForMultiMetricChart = (
@@ -74,6 +76,7 @@ const TotalSales = () => {
   };
 
   const multiMetricChartData = transformForMultiMetricChart(data?.data.trend);
+
   const comparisonKeys = Array.from(
     new Set(
       multiMetricChartData?.flatMap((item) =>
@@ -144,13 +147,8 @@ const TotalSales = () => {
     return null;
   };
 
-  // Get color for each comparison key
-  const getComparisonColor = (index: number) => {
-    return `var(--color-chart-${(index % 3) + 2})`; // Cycles through chart-2, chart-3, chart-4
-  };
-
   return (
-    <div className="w-full p-4 bg-background rounded-lg border">
+    <div className="w-full p-4 bg-muted/70 rounded-lg">
       <Tabs value={currentMetric} onValueChange={setCurrentMetric}>
         <div className="flex flex-col gap-4 mb-4">
           <div className="flex justify-between items-center">
@@ -161,7 +159,9 @@ const TotalSales = () => {
                     className="w-3 h-3 rounded-full mr-2"
                     style={{ backgroundColor: getComparisonColor(index) }}
                   />
-                  <span className="text-sm text-muted-foreground">{key}:</span>
+                  <span className="text-sm flex text-muted-foreground">
+                    {clipText(key)}:
+                  </span>
                   <span className="ml-1 font-medium">
                     {formatCurrency(
                       multiMetricChartData?.reduce(
@@ -176,7 +176,11 @@ const TotalSales = () => {
             </div>
             <TabsList>
               {METRICS.map((metric) => (
-                <TabsTrigger key={metric.value} value={metric.value}>
+                <TabsTrigger
+                  // className="data-[state=active]:bg-primary dark:data-[state=active]:text-foreground"
+                  key={metric.value}
+                  value={metric.value}
+                >
                   {metric.label}
                 </TabsTrigger>
               ))}
@@ -222,20 +226,20 @@ const TotalSales = () => {
                   </defs>
                   <CartesianGrid
                     strokeDasharray="3 3"
-                    className="stroke-muted"
+                    className="stroke-muted-foreground/10"
                   />
                   <XAxis
                     dataKey="name"
                     tick={{ fontSize: 12 }}
                     tickLine={false}
                     className="fill-muted-foreground"
-                    axisLine={{ className: "stroke-muted" }}
+                    axisLine={{ className: "stroke-muted-foreground" }}
                   />
                   <YAxis
                     tick={{ fontSize: 12 }}
                     tickLine={false}
                     className="fill-muted-foreground"
-                    axisLine={{ className: "stroke-muted" }}
+                    axisLine={{ className: "stroke-muted-foreground" }}
                     tickFormatter={(value) =>
                       formatCurrency(value, currentMetric)
                     }

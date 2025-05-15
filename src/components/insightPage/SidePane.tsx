@@ -121,7 +121,7 @@ function InsightsSidebar() {
 
   return (
     <Sidebar className="border-r">
-      <SidebarContent className="px-4 flex flex-col justify-center">
+      <SidebarContent className="px-4 flex flex-col justify-center bg-muted/50">
         {/* Comparison Level Selection */}
         <SidebarGroup>
           <SidebarGroupLabel>

@@ -1,17 +1,15 @@
 "use client";
 
 import {
-  Line,
-  LineChart,
-  CartesianGrid,
   AreaChart,
+  Area,
   XAxis,
   YAxis,
-  Area,
   Tooltip,
+  CartesianGrid,
   ResponsiveContainer,
 } from "recharts";
-import { ChartContainer, ChartConfig } from "@/components/ui/chart";
+import { ChartConfig, ChartContainer } from "@/components/ui/chart";
 import { Tabs, TabsContent, TabsList } from "@/components/ui/tabs";
 import { useKpis } from "@/hooks/useKpi";
 import { formatCurrency } from "@/utils/formatCurrency";
@@ -21,12 +19,6 @@ import { useState, useRef, useEffect } from "react";
 import { motion } from "framer-motion";
 import { useTabStore } from "@/stores/useTabStore";
 import TOTSkelenton from "./TOTSkelenton";
-
-const chartConfig = {
-  value: {
-    label: "Sales",
-  },
-} satisfies ChartConfig;
 
 const TrendOverTime = () => {
   const { data, isLoading, isError } = useKpis();
@@ -53,20 +45,27 @@ const TrendOverTime = () => {
     }
   }, [activeTab, kpiTitles]);
 
+  const chartConfig = {
+    value: {
+      label: "Sales",
+    },
+  } satisfies ChartConfig;
+
   if (isLoading) return <TOTSkelenton />;
-  if (isError) return <p>Error loading data</p>;
+  if (isError) return <p className="text-destructive">Error loading data</p>;
   if (!data || data.length === 0) return <p>No data available</p>;
 
   return (
     <Tabs value={activeTab ?? ""} className="w-full h-[400px] overflow-hidden">
-      <TabsList className="relative inline-flex  bg-muted p-1 rounded-md overflow-hidden h-10 shadow-xs shadow-accent/15">
+      <TabsList className="relative inline-flex bg-muted p-1 rounded-lg h-10">
         {/* Sliding indicator */}
         <motion.div
-          className="absolute top-1 left-1 h-[calc(100%-0.5rem)] rounded-sm bg-primary z-0 transition-all duration-300"
+          className="absolute top-1 left-1 h-[calc(100%-0.5rem)] rounded-md bg-primary z-0"
           style={{
             width: triggerWidth,
             transform: `translateX(${offset}px)`,
           }}
+          transition={{ type: "spring", stiffness: 300, damping: 30 }}
         />
 
         {/* Tab triggers */}
@@ -76,10 +75,10 @@ const TrendOverTime = () => {
             ref={(el) => (refs.current[index] = el)}
             onClick={() => setActiveTab(title)}
             className={cn(
-              "relative z-10 px-4 py-1 transition-colors",
+              "relative z-10 px-4 py-1 text-sm font-medium transition-colors",
               activeTab === title
-                ? "text-white dark:text-secondary-foreground"
-                : "text-muted-foreground"
+                ? "text-primary-foreground"
+                : "text-muted-foreground hover:text-foreground"
             )}
           >
             {title}
@@ -91,12 +90,12 @@ const TrendOverTime = () => {
         <TabsContent
           key={kpi.title}
           value={kpi.title}
-          className="h-[calc(100%-2.5rem)] pt-4"
+          className="h-[calc(100%-2.5rem)] mt-4"
         >
           <ChartContainer
             title={kpi.title}
-            config={chartConfig}
             className="h-full w-full"
+            config={chartConfig}
           >
             <ResponsiveContainer width="100%" height="100%">
               <AreaChart
@@ -107,54 +106,82 @@ const TrendOverTime = () => {
                   <linearGradient id="gradientFill" x1="0" y1="0" x2="0" y2="1">
                     <stop
                       offset="5%"
-                      stopColor="var(--chart-2)"
-                      stopOpacity={0.5}
+                      stopColor="var(--color-chart-2)"
+                      stopOpacity={0.2}
                     />
                     <stop
                       offset="95%"
-                      stopColor="var(--chart-2)"
+                      stopColor="var(--color-chart-2)"
                       stopOpacity={0}
                     />
                   </linearGradient>
                 </defs>
 
                 <CartesianGrid
-                  strokeDasharray="2 2"
-                  stroke="var(--foreground)"
-                  opacity={0.1}
+                  strokeDasharray="3 3"
+                  className="stroke-muted"
+                  vertical={false}
                 />
+
                 <YAxis
                   tick={{ fontSize: 12 }}
+                  tickLine={false}
+                  axisLine={false}
+                  className="fill-muted-foreground"
                   tickFormatter={(value) => formatCurrency(value, activeTab)}
                 />
+
                 <XAxis
                   dataKey="date"
                   tick={{ fontSize: 12 }}
-                  tickFormatter={formatChartDate} // Add this
+                  tickLine={false}
+                  className="fill-muted-foreground"
+                  axisLine={{ className: "stroke-muted" }}
+                  tickFormatter={formatChartDate}
                 />
 
                 <Tooltip
-                  contentStyle={{
-                    backgroundColor: "#1f2937",
-                    border: "none",
-                    borderRadius: "6px",
-                    color: "#fff",
+                  content={({ active, payload, label }) => {
+                    if (active && payload && payload.length) {
+                      return (
+                        <div className="bg-background p-4 shadow-lg rounded-lg border border-border">
+                          <p className="font-semibold text-sm">
+                            {formatChartDate(label)}
+                          </p>
+                          <div className="flex items-center mt-2">
+                            <div className="w-2 h-2 rounded-full bg-chart-2 mr-2" />
+                            <span className="text-muted-foreground text-sm">
+                              {kpi.title}:
+                            </span>
+                            <span className="ml-2 font-medium">
+                              {formatCurrency(payload[0].value, activeTab)}
+                            </span>
+                          </div>
+                        </div>
+                      );
+                    }
+                    return null;
                   }}
-                  labelStyle={{ color: "#d1d5db" }}
-                  labelFormatter={formatChartDate} // Use the same formatter
-                  formatter={(value) => [
-                    formatCurrency(Number(value), activeTab),
-                    chartConfig.value.label,
-                  ]}
                 />
+
                 <Area
                   type="monotone"
                   dataKey="value"
-                  stroke="var(--chart-2)"
+                  stroke="var(--color-chart-2)"
                   strokeWidth={2}
                   fill="url(#gradientFill)"
-                  dot={{ r: 2 }}
-                  activeDot={{ r: 5 }}
+                  dot={{
+                    r: 2,
+                    stroke: "var(--color-chart-2)",
+                    fill: "var(--background)",
+                    strokeWidth: 2,
+                  }}
+                  activeDot={{
+                    r: 5,
+                    stroke: "var(--color-chart-2)",
+                    fill: "var(--background)",
+                    strokeWidth: 2,
+                  }}
                 />
               </AreaChart>
             </ResponsiveContainer>

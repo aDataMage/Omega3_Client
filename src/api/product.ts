@@ -1,7 +1,9 @@
 import axios from "@/lib/axios";
 import {
+  BrandsTable,
   Product,
   ProductCreate,
+  ProductsTable,
   ProductUpdate,
   TopProducts,
 } from "../types/product";
@@ -110,6 +112,36 @@ export const getProductNames = async (brandNames: string[] | undefined) => {
   }
 };
 
+export const getBrandsTableData = async (
+  start_date: string | undefined,
+  end_date: string | undefined
+) => {
+  try {
+    const response = await axios.get<BrandsTable[]>(
+      `${BASE_URL}/table/brand?start_date=${start_date}&end_date=${end_date}`
+    );
+    return response.data;
+  } catch (error) {
+    console.error(`Error fetching brand table`, error);
+    throw error;
+  }
+};
+
+export const getProductsTableData = async (
+  start_date: string | undefined,
+  end_date: string | undefined
+) => {
+  try {
+    const response = await axios.get<ProductsTable[]>(
+      `${BASE_URL}/table/product?start_date=${start_date}&end_date=${end_date}`
+    );
+    return response.data;
+  } catch (error) {
+    console.error(`Error fetching product table`, error);
+    throw error;
+  }
+};
+
 export default {
   fetchProducts,
   fetchProduct,
@@ -119,4 +151,6 @@ export default {
   getTopNProductByMetric,
   getBrands,
   getProductNames,
+  getBrandsTableData,
+  getProductsTableData,
 };

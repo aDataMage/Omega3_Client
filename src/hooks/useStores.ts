@@ -7,9 +7,18 @@ import {
   getTopNStoreByMetric,
   getRegions,
   getStoreNames,
+  getRegionsTable,
+  getStoreTableData,
 } from "@/api/store";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { Store, StoreCreate, StoreUpdate, TopStores } from "@/types/store";
+import {
+  RegionTable,
+  Store,
+  StoreCreate,
+  StoreTable,
+  StoreUpdate,
+  TopStores,
+} from "@/types/store";
 import { useDateRangeStore } from "@/stores/useDateRangeStore";
 import { DateRange } from "react-day-picker";
 
@@ -91,5 +100,27 @@ export const useTopNStores = (
     queryKey: ["stores", "top", n, metric],
     queryFn: () => getTopNStoreByMetric(metric, n, startDate, endDate), // Replace with actual API call for top products
     enabled: !!n && !!metric,
+  });
+};
+
+export const useRegionsTable = (dateRange: DateRange) => {
+  const startDate = dateRange?.from?.toISOString().split("T")[0];
+  const endDate = dateRange?.to?.toISOString().split("T")[0];
+
+  return useQuery<RegionTable[]>({
+    queryKey: ["region", "table", startDate, endDate], // Include dates in query key
+    queryFn: () => getRegionsTable(startDate, endDate),
+    enabled: !!dateRange?.from && !!dateRange?.to, // Only enable when both dates exist
+  });
+};
+
+export const useStoreTable = (dateRange: DateRange) => {
+  const startDate = dateRange?.from?.toISOString().split("T")[0];
+  const endDate = dateRange?.to?.toISOString().split("T")[0];
+
+  return useQuery<StoreTable[]>({
+    queryKey: ["stores", "table", startDate, endDate],
+    queryFn: () => getStoreTableData(startDate, endDate),
+    enabled: !!dateRange?.from && !!dateRange?.to,
   });
 };

@@ -13,8 +13,8 @@ export default async function Layout({
   return (
     <SidebarProvider defaultOpen={defaultOpen}>
       <AppSideBar />
-      <main className="w-full mx-0 px-0">
-        <SidebarTrigger />
+      <main className="w-full mx-0 px-0 py-10 relative">
+        <SidebarTrigger className="self-center sticky top-1/2 bottom-1/2 z-20" />
         {children}
       </main>
     </SidebarProvider>
