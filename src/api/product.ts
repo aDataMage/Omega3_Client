@@ -118,7 +118,7 @@ export const getBrandsTableData = async (
 ) => {
   try {
     const response = await axios.get<BrandsTable[]>(
-      `${BASE_URL}/table/brand?start_date=${start_date}&end_date=${end_date}`
+      `${BASE_URL}/table?group_by=brand&start_date=${start_date}&end_date=${end_date}`
     );
     return response.data;
   } catch (error) {
@@ -133,7 +133,7 @@ export const getProductsTableData = async (
 ) => {
   try {
     const response = await axios.get<ProductsTable[]>(
-      `${BASE_URL}/table/product?start_date=${start_date}&end_date=${end_date}`
+      `${BASE_URL}/table?group_by=product&start_date=${start_date}&end_date=${end_date}`
     );
     return response.data;
   } catch (error) {

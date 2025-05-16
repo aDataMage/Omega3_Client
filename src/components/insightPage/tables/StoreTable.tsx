@@ -13,7 +13,14 @@ import {
 import { useStoreTable } from "@/hooks/useStores";
 import { useDateRangeStore } from "@/stores/useDateRangeStore";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { AlertCircle, ArrowUpDown, Loader2, ChevronDown } from "lucide-react";
+import {
+  AlertCircle,
+  ArrowUpDown,
+  Loader2,
+  ChevronDown,
+  ArrowUp,
+  ArrowDown,
+} from "lucide-react";
 import { formatCurrency } from "@/utils/formatCurrency";
 import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
@@ -214,7 +221,15 @@ export function StoreTable() {
                 className="p-0"
               >
                 Sales
-                <ArrowUpDown className="ml-2 h-4 w-4" />
+                {sortField === "sales" ? (
+                  sortDirection === "desc" ? (
+                    <ArrowUp className="h-4 w-4 text-primary" />
+                  ) : (
+                    <ArrowUpDown className="h-4 w-4 text-primary" />
+                  )
+                ) : (
+                  <ArrowUpDown className="h-4 w-4 opacity-50" />
+                )}
               </Button>
             </TableHead>
             <TableHead className="text-right">
@@ -224,7 +239,15 @@ export function StoreTable() {
                 className="p-0"
               >
                 Profit
-                <ArrowUpDown className="ml-2 h-4 w-4" />
+                {sortField === "profit" ? (
+                  sortDirection === "desc" ? (
+                    <ArrowUp className="h-4 w-4 text-primary" />
+                  ) : (
+                    <ArrowUpDown className="h-4 w-4 text-primary" />
+                  )
+                ) : (
+                  <ArrowUpDown className="h-4 w-4 opacity-50" />
+                )}
               </Button>
             </TableHead>
             <TableHead className="text-right">
@@ -234,7 +257,15 @@ export function StoreTable() {
                 className="p-0"
               >
                 Returns
-                <ArrowUpDown className="ml-2 h-4 w-4" />
+                {sortField === "returns" ? (
+                  sortDirection === "desc" ? (
+                    <ArrowUp className="h-4 w-4 text-primary" />
+                  ) : (
+                    <ArrowDown className="h-4 w-4 text-primary" />
+                  )
+                ) : (
+                  <ArrowUpDown className="h-4 w-4 opacity-50" />
+                )}
               </Button>
             </TableHead>
             <TableHead className="text-right">
@@ -244,7 +275,15 @@ export function StoreTable() {
                 className="p-0"
               >
                 Orders
-                <ArrowUpDown className="ml-2 h-4 w-4" />
+                {sortField === "orders" ? (
+                  sortDirection === "desc" ? (
+                    <ArrowUp className="h-4 w-4 text-primary" />
+                  ) : (
+                    <ArrowDown className="h-4 w-4 text-primary" />
+                  )
+                ) : (
+                  <ArrowUpDown className="h-4 w-4 opacity-50" />
+                )}
               </Button>
             </TableHead>
             <TableHead className="text-right">Contribution</TableHead>

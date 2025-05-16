@@ -261,6 +261,27 @@ export function TopProductsTable() {
   return (
     <>
       <div className="space-y-4">
+        <div className="flex flex-wrap gap-4">
+          <p className="texl-xl font-semibold">Top Product</p>
+          <div className="flex items-center gap-2 ml-auto">
+            <span className="text-sm text-muted-foreground">Show</span>
+            <Select
+              value={topN.toString()}
+              onValueChange={(value) => setTopN(Number(value))}
+            >
+              <SelectTrigger className="w-[80px]">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                {[10, 20, 50].map((n) => (
+                  <SelectItem key={n} value={n.toString()}>
+                    {n}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+        </div>
         {/* Filters */}
         <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
           <Input
@@ -322,25 +343,6 @@ export function TopProductsTable() {
               ))}
             </SelectContent>
           </Select>
-
-          <div className="flex items-center gap-2 ml-auto">
-            <span className="text-sm text-muted-foreground">Show</span>
-            <Select
-              value={topN.toString()}
-              onValueChange={(value) => setTopN(Number(value))}
-            >
-              <SelectTrigger className="w-[80px]">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                {[10, 20, 50].map((n) => (
-                  <SelectItem key={n} value={n.toString()}>
-                    {n}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
         </div>
 
         {/* Table */}

@@ -116,7 +116,7 @@ export const getRegionsTable = async (
 ) => {
   try {
     const response = await axios.get<RegionTable[]>(
-      `${BASE_URL}/table/region?start_date=${start_date}&end_date=${end_date}`
+      `${BASE_URL}/table?group_by=region&start_date=${start_date}&end_date=${end_date}`
     );
     return response.data;
   } catch (error) {
@@ -130,7 +130,7 @@ export const getStoreTableData = async (
 ) => {
   try {
     const response = await axios.get<StoreTable[]>(
-      `${BASE_URL}/table/store?start_date=${start_date}&end_date=${end_date}`
+      `${BASE_URL}/table?group_by=store&start_date=${start_date}&end_date=${end_date}`
     );
     return response.data;
   } catch (error) {

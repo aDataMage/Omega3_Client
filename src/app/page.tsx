@@ -1,4 +1,9 @@
-import { KpiCardList, TrendOverTime, TopProducts } from "@/components";
+import {
+  KpiCardList,
+  TrendOverTime,
+  TopProducts,
+  TopStores,
+} from "@/components";
 import TrendOverTime2 from "@/components/dashboard/Main/TOT2";
 import { DatePickerWithRange } from "@/components/shared/DatePickerWithRange";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -19,22 +24,14 @@ export default function Home() {
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <Card>
-          <CardHeader>
-            <CardTitle>Top Products</CardTitle>
-          </CardHeader>
           <CardContent>
             <TopProducts />
           </CardContent>
         </Card>
 
         <Card>
-          <CardHeader>
-            <CardTitle>Top Stores</CardTitle>
-          </CardHeader>
           <CardContent>
-            <div className="h-[300px] flex items-center justify-center text-muted-foreground">
-              Store data will appear here
-            </div>
+            <TopStores />
           </CardContent>
         </Card>
       </div>

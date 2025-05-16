@@ -13,7 +13,7 @@ const TableSwitch = (props: Props) => {
     appliedFilters: { comparisonLevel },
   } = useInsightsStore();
   return (
-    <div className="mt-10 mb-10 bg-muted/70 p-4 rounded-lg shadow">
+    <div className="">
       {comparisonLevel == "brand" ? (
         <BrandsTable />
       ) : comparisonLevel == "product" ? (

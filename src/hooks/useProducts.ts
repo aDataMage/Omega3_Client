@@ -36,9 +36,11 @@ export const useBrands = () => {
   });
 };
 export const useProductsNames = (brandNames: string[]) => {
+  console.log("brandNames", brandNames);
   return useQuery<{ product_id: string; name: string }[]>({
     queryKey: ["productsNames"],
-    queryFn: () => getProductNames(brandNames),
+    queryFn: (): Promise<{ product_id: string; name: string }[]> =>
+      getProductNames(brandNames),
   });
 };
 

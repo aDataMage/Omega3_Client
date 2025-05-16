@@ -13,15 +13,7 @@ import {
   ChevronUp,
   Search,
 } from "lucide-react";
-import { DatePickerWithRange } from "@/components/shared/DatePickerWithRange";
-import {
-  Sidebar,
-  SidebarContent,
-  SidebarGroup,
-  SidebarGroupContent,
-  SidebarGroupLabel,
-  SidebarMenu,
-} from "@/components/ui/sidebar";
+import DateRangePicker from "@/components/shared/date-range-picker";
 import {
   Select,
   SelectContent,
@@ -133,44 +125,37 @@ export function InsightsSidebar() {
   }, [selectedRegions, selectedStores, selectedBrands, selectedProducts]);
 
   return (
-    <Sidebar className="border-r">
-      <SidebarContent className="px-4 py-6 flex flex-col h-full">
+    <div className="w-64 h-full bg-background overflow-hidden flex flex-col">
+      <div className="px-4 py-6 flex flex-col h-full overflow-auto">
         <div className="space-y-6 flex-1 overflow-auto">
           {/* Comparison Level Selection */}
-          <SidebarGroup>
-            <SidebarGroupLabel className="flex items-center text-sm font-medium">
+          <div className="space-y-2">
+            <div className="flex items-center text-sm font-medium">
               <Layers className="h-4 w-4 mr-2" />
               Compare By
-            </SidebarGroupLabel>
-            <SidebarGroupContent>
-              <SidebarMenu>
-                <Select
-                  value={comparisonLevel}
-                  onValueChange={setComparisonLevel}
-                >
-                  <SelectTrigger className="w-full">
-                    <SelectValue placeholder="Select level" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {filters.map((filter) => (
-                      <SelectItem key={filter.key} value={filter.key}>
-                        <div className="flex items-center">
-                          {filter.icon}
-                          <span className="ml-2">{filter.label}</span>
-                        </div>
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </SidebarMenu>
-            </SidebarGroupContent>
-          </SidebarGroup>
+            </div>
+            <Select value={comparisonLevel} onValueChange={setComparisonLevel}>
+              <SelectTrigger className="w-full">
+                <SelectValue placeholder="Select level" />
+              </SelectTrigger>
+              <SelectContent>
+                {filters.map((filter) => (
+                  <SelectItem key={filter.key} value={filter.key}>
+                    <div className="flex items-center">
+                      {filter.icon}
+                      <span className="ml-2">{filter.label}</span>
+                    </div>
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
 
           <Separator />
 
           {/* Dynamic Filters */}
-          <SidebarGroup>
-            <SidebarGroupLabel className="flex items-center text-sm font-medium">
+          <div className="space-y-2">
+            <div className="flex items-center text-sm font-medium">
               <Filter className="h-4 w-4 mr-2" />
               Filters
               {activeFilterCount > 0 && (
@@ -178,34 +163,19 @@ export function InsightsSidebar() {
                   {activeFilterCount}
                 </Badge>
               )}
-            </SidebarGroupLabel>
-            <SidebarGroupContent>
-              <SidebarMenu className="space-y-2">
-                {filters.map((filter) => (
-                  <FilterSection
-                    key={filter.key}
-                    filter={filter}
-                    isComparison={comparisonLevel === filter.key}
-                  />
-                ))}
-              </SidebarMenu>
-            </SidebarGroupContent>
-          </SidebarGroup>
+            </div>
+            <div className="space-y-2">
+              {filters.map((filter) => (
+                <FilterSection
+                  key={filter.key}
+                  filter={filter}
+                  isComparison={comparisonLevel === filter.key}
+                />
+              ))}
+            </div>
+          </div>
 
           <Separator />
-
-          {/* Date Range Picker */}
-          <SidebarGroup>
-            <SidebarGroupLabel className="flex items-center text-sm font-medium">
-              <Calendar className="h-4 w-4 mr-2" />
-              Date Range
-            </SidebarGroupLabel>
-            <SidebarGroupContent>
-              <SidebarMenu>
-                <DatePickerWithRange className="w-full" />
-              </SidebarMenu>
-            </SidebarGroupContent>
-          </SidebarGroup>
 
           {/* Error message */}
           {error && (
@@ -228,8 +198,8 @@ export function InsightsSidebar() {
             Reset All
           </Button>
         </div>
-      </SidebarContent>
-    </Sidebar>
+      </div>
+    </div>
   );
 }
 
